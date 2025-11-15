@@ -46,7 +46,16 @@ public class LibMember {
     public int getNumBookIssued() { return numBookIssued; }
     //all get methods
 
-
+    public boolean equals(LibMember check){
+        if(check == null){
+            return false;
+        }
+        boolean same= false;
+        if(firstName.equals(check.firstName) && lastName.equals(check.lastName) && gender == check.gender && cprNum == check.cprNum && teleNum.equals(check.teleNum) && numBookIssued == check.numBookIssued){
+            same = true;
+        }
+        return same;
+    }
 
     public String toString(){
         String converted= "Name: " + firstName + " " + lastName + "\ngender: " + gender + "\nCPR: " +cprNum + "\nTelephone: " +teleNum + "\nNumber of books issued: " + numBookIssued; 
