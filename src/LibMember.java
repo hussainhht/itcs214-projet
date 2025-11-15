@@ -11,7 +11,7 @@ public class LibMember {
     public LibMember(){
         firstName="";
         lastName="";
-        gender='U';
+        gender='-';
         cprNum=0;
         teleNum="";
         booksIssued = new Book[10];
