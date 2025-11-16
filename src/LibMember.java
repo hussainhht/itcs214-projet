@@ -12,10 +12,10 @@ public class LibMember {
         firstName="";
         lastName="";
         gender='-';
-        cprNum=0;
+        cprNum=-1;
         teleNum="";
         booksIssued = new Book[10];
-        numBookIssued=0;
+        numBookIssued=-1;
     }//defult constracture
 
     public LibMember(String f, String l, char g, long c, String t){
