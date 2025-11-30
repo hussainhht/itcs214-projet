@@ -1,248 +1,245 @@
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 public class LibrarySystem {
-    private ArrayList<Book> books;
-    private ArrayList<LibMember> members;
+
+    private LinkedList<Book> booksList;
+    private LinkedList<LibMember> membersList;
+    private int booksListSize;
+    private int membersListSize;
 
     public LibrarySystem() {
-        books = new ArrayList<>();
-        members = new ArrayList<>();
+        booksList = new LinkedList<Book>();
+        membersList = new LinkedList<LibMember>();
+        booksListSize = 0;
+        membersListSize = 0;
     }
 
-    // Add a new book to the library
-    public void addBook(Book book) {
-        books.add(book);
-        System.out.println("Book added successfully!");
-    }
-
-    // Add a new member to the library
-    public void addMember(LibMember member) {
-        members.add(member);
-        System.out.println("Member added successfully!");
-    }
-
-    // Issue a book to a member
-    public boolean issueBook(long accessionNum, long cprNum) {
-        Book book = findBookByAccession(accessionNum);
-        LibMember member = findMemberByCpr(cprNum);
-
+    //  addBook
+    public boolean addBook(Book book) {
         if (book == null) {
-            System.out.println("Book not found!");
             return false;
         }
 
-        if (member == null) {
-            System.out.println("Member not found!");
-            return false;
+        ListIterator<Book> it = booksList.listIterator();
+        while (it.hasNext()) {
+            Book b = it.next();
+            if (b.getAccessionNum() == book.getAccessionNum()) {
+                return false;
+            }
         }
 
-        if (book.getIssuedTo() != null) {
-            System.out.println("Book is already issued!");
-            return false;
-        }
-
-        if (member.getNumBookIssued() >= 10) {
-            System.out.println("Member has reached maximum book limit!");
-            return false;
-        }
-
-        // Issue the book
-        book.setIssuedTo(member);
-        Book[] currentBooks = member.getBooksIssued();
-        currentBooks[member.getNumBookIssued()] = book;
-        member.setNumBooksIssued(member.getNumBookIssued() + 1);
-
-        System.out.println("Book issued successfully!");
+        booksList.addLast(book);
+        booksListSize++;
         return true;
     }
 
-    // Return a book
+    //  deleteBook
+    public boolean deleteBook(long accessionNum) {
+        if (booksListSize == 0) {
+            return false;
+        }
+
+        ListIterator<Book> it = booksList.listIterator();
+        while (it.hasNext()) {
+            Book b = it.next();
+            if (b.getAccessionNum() == accessionNum) {
+                if (b.getIssuedTo() != null) {
+                    return false;
+                }
+                it.remove();
+                booksListSize--;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //  addMember
+    public boolean addMember(LibMember member) {
+        if (member == null) {
+            return false;
+        }
+
+        ListIterator<LibMember> it = membersList.listIterator();
+        while (it.hasNext()) {
+            LibMember m = it.next();
+            if (m.getCprNum() == member.getCprNum()) {
+                return false;
+            }
+        }
+
+        membersList.addLast(member);
+        membersListSize++;
+        return true;
+    }
+
+    //  deleteMember
+    public boolean deleteMember(long cprNum) {
+        if (membersListSize == 0) {
+            return false;
+        }
+
+        ListIterator<LibMember> it = membersList.listIterator();
+        while (it.hasNext()) {
+            LibMember m = it.next();
+            if (m.getCprNum() == cprNum) {
+
+                if (m.getNumBooksIssued() > 0) {
+                    return false;
+                }
+
+                ListIterator<Book> bit = booksList.listIterator();
+                while (bit.hasNext()) {
+                    Book b = bit.next();
+                    if (b.getIssuedTo() == m) {
+                        return false;
+                    }
+                }
+
+                it.remove();
+                membersListSize--;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //  searchBook
+    public int searchBook(long accessionNum) {
+        int index = 0;
+        ListIterator<Book> it = booksList.listIterator();
+        while (it.hasNext()) {
+            Book b = it.next();
+            if (b.getAccessionNum() == accessionNum) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
+    }
+
+    //  searchMember
+    public int searchMember(long cprNum) {
+        int index = 0;
+        ListIterator<LibMember> it = membersList.listIterator();
+        while (it.hasNext()) {
+            LibMember m = it.next();
+            if (m.getCprNum() == cprNum) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
+    }
+
+    //  isEmptyBooksList
+    public boolean isEmptyBooksList() {
+        return booksListSize == 0;
+    }
+
+    //  isEmptyMembersList
+    public boolean isEmptyMembersList() {
+        return membersListSize == 0;
+    }
+
+    //  sizeBooksList
+    public int sizeBooksList() {
+        return booksListSize;
+    }
+
+    //  sizeMembersList
+    public int sizeMembersList() {
+        return membersListSize;
+    }
+
+    //  issueBook
+    public boolean issueBook(long accessionNum, long cprNum) {
+        int bookIndex = searchBook(accessionNum);
+        if (bookIndex == -1) return false;
+
+        int memberIndex = searchMember(cprNum);
+        if (memberIndex == -1) return false;
+
+        Book book = booksList.get(bookIndex);
+        LibMember member = membersList.get(memberIndex);
+
+        if (book.getIssuedTo() != null) return false;
+
+        if (member.getNumBooksIssued() >= 10) return false;
+
+        Book[] issued = member.getBooksIssued();
+        int num = member.getNumBooksIssued();
+
+        issued[num] = book;
+        member.setNumBooksIssued(num + 1);
+        book.setIssuedTo(member);
+
+        return true;
+    }
+
+    //  returnBook
     public boolean returnBook(long accessionNum) {
-        Book book = findBookByAccession(accessionNum);
+        int bookIndex = searchBook(accessionNum);
+        if (bookIndex == -1) return false;
 
-        if (book == null) {
-            System.out.println("Book not found!");
-            return false;
-        }
-
-        if (book.getIssuedTo() == null) {
-            System.out.println("Book is not currently issued!");
-            return false;
-        }
-
+        Book book = booksList.get(bookIndex);
         LibMember member = book.getIssuedTo();
 
-        // Remove book from member's issued books
-        Book[] currentBooks = member.getBooksIssued();
-        int bookIndex = -1;
-        for (int i = 0; i < member.getNumBookIssued(); i++) {
-            if (currentBooks[i].getAccessionNum() == accessionNum) {
-                bookIndex = i;
+        if (member == null) return false;
+
+        Book[] issued = member.getBooksIssued();
+        int num = member.getNumBooksIssued();
+        int pos = -1;
+
+        for (int i = 0; i < num; i++) {
+            if (issued[i].getAccessionNum() == accessionNum) {
+                pos = i;
                 break;
             }
         }
 
-        if (bookIndex != -1) {
-            // Shift books array
-            for (int i = bookIndex; i < member.getNumBookIssued() - 1; i++) {
-                currentBooks[i] = currentBooks[i + 1];
+        if (pos != -1) {
+            for (int i = pos; i < num - 1; i++) {
+                issued[i] = issued[i + 1];
             }
-            currentBooks[member.getNumBookIssued() - 1] = null;
-            member.setNumBooksIssued(member.getNumBookIssued() - 1);
+            issued[num - 1] = null;
+            member.setNumBooksIssued(num - 1);
         }
 
         book.setIssuedTo(null);
-        System.out.println("Book returned successfully!");
         return true;
     }
 
-    // Find book by accession number
-    public Book findBookByAccession(long accessionNum) {
-        for (Book book : books) {
-            if (book.getAccessionNum() == accessionNum) {
-                return book;
-            }
-        }
-        return null;
-    }
-
-    // Find member by CPR number
-    public LibMember findMemberByCpr(long cprNum) {
-        for (LibMember member : members) {
-            if (member.getCprNum() == cprNum) {
-                return member;
-            }
-        }
-        return null;
-    }
-
-    // Display all books
-    public void displayAllBooks() {
-        if (books.isEmpty()) {
-            System.out.println("No books in the library!");
+    //  printBooksIssued
+    public void printBooksIssued(long cprNum) {
+        int memberIndex = searchMember(cprNum);
+        if (memberIndex == -1) {
+            System.out.println("Member not found");
             return;
         }
 
-        System.out.println("\n=== All Books ===");
-        for (int i = 0; i < books.size(); i++) {
-            System.out.println("\nBook #" + (i + 1) + ":");
-            System.out.println(books.get(i));
-            System.out.println("Status: " + (books.get(i).getIssuedTo() == null ? "Available" : "Issued"));
-            System.out.println("-------------------");
-        }
-    }
+        LibMember member = membersList.get(memberIndex);
+        Book[] issued = member.getBooksIssued();
+        int num = member.getNumBooksIssued();
 
-    // Display all members
-    public void displayAllMembers() {
-        if (members.isEmpty()) {
-            System.out.println("No members in the library!");
+        if (num == 0) {
+            System.out.println("No books issued to this member");
             return;
         }
 
-        System.out.println("\n=== All Members ===");
-        for (int i = 0; i < members.size(); i++) {
-            System.out.println("\nMember #" + (i + 1) + ":");
-            System.out.println(members.get(i));
-            System.out.println("-------------------");
+        for (int i = 0; i < num; i++) {
+            System.out.println(issued[i]);
         }
     }
 
-    // Display available books
-    public void displayAvailableBooks() {
-        System.out.println("\n=== Available Books ===");
-        boolean found = false;
-        for (Book book : books) {
-            if (book.getIssuedTo() == null) {
-                System.out.println(book);
-                System.out.println("-------------------");
-                found = true;
-            }
+    //  isBookIssued
+    public boolean isBookIssued(long accessionNum) {
+        int index = searchBook(accessionNum);
+        if (index == -1) {
+            return false;
         }
-        if (!found) {
-            System.out.println("No available books!");
-        }
-    }
-
-    // Display issued books
-    public void displayIssuedBooks() {
-        System.out.println("\n=== Issued Books ===");
-        boolean found = false;
-        for (Book book : books) {
-            if (book.getIssuedTo() != null) {
-                System.out.println(book);
-                System.out.println("-------------------");
-                found = true;
-            }
-        }
-        if (!found) {
-            System.out.println("No issued books!");
-        }
-    }
-
-    // Search books by title
-    public void searchBooksByTitle(String title) {
-        System.out.println("\n=== Search Results ===");
-        boolean found = false;
-        for (Book book : books) {
-            if (book.getTitle().toLowerCase().contains(title.toLowerCase())) {
-                System.out.println(book);
-                System.out.println("Status: " + (book.getIssuedTo() == null ? "Available" : "Issued"));
-                System.out.println("-------------------");
-                found = true;
-            }
-        }
-        if (!found) {
-            System.out.println("No books found with that title!");
-        }
-    }
-
-    // Search books by author
-    public void searchBooksByAuthor(String author) {
-        System.out.println("\n=== Search Results ===");
-        boolean found = false;
-        for (Book book : books) {
-            if (book.getAuthor1().toLowerCase().contains(author.toLowerCase()) ||
-                    book.getAuthor2().toLowerCase().contains(author.toLowerCase())) {
-                System.out.println(book);
-                System.out.println("Status: " + (book.getIssuedTo() == null ? "Available" : "Issued"));
-                System.out.println("-------------------");
-                found = true;
-            }
-        }
-        if (!found) {
-            System.out.println("No books found by that author!");
-        }
-    }
-
-    // Get total number of books
-    public int getTotalBooks() {
-        return books.size();
-    }
-
-    // Get total number of members
-    public int getTotalMembers() {
-        return members.size();
-    }
-
-    // Get number of available books
-    public int getAvailableBooks() {
-        int count = 0;
-        for (Book book : books) {
-            if (book.getIssuedTo() == null) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    // Get number of issued books
-    public int getIssuedBooksCount() {
-        int count = 0;
-        for (Book book : books) {
-            if (book.getIssuedTo() != null) {
-                count++;
-            }
-        }
-        return count;
+        Book book = booksList.get(index);
+        return book.getIssuedTo() != null;
     }
 }
