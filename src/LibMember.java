@@ -5,7 +5,7 @@ public class LibMember {
     private char gender;
     private long cprNum;
     private String teleNum;
-    private int numBookIssued;
+    private int numBooksIssued;
     private Book [] booksIssued = new Book[10];
 
     public LibMember(){
@@ -15,7 +15,7 @@ public class LibMember {
         cprNum=-1;
         teleNum="";
         booksIssued = new Book[10];
-        numBookIssued=-1;
+        numBooksIssued=0;
     }//defult constracture
 
     public LibMember(String f, String l, char g, long c, String t){
@@ -25,7 +25,7 @@ public class LibMember {
         cprNum=c;
         teleNum=t;
         booksIssued = new Book[10];
-        numBookIssued=0;
+        numBooksIssued=0;
     }//second constractor
 
     public void setFirstName(String f) { firstName = f; }
@@ -34,7 +34,7 @@ public class LibMember {
     public void setCprNum(long cpr) { cprNum = cpr; }
     public void setTeleNum(String tel) { teleNum = tel; }
     public void setBooksIssued(Book[] books) { booksIssued = books; }
-    public void setNumBooksIssued(int num) { numBookIssued = num; }
+    public void setNumBooksIssued(int num) { numBooksIssued = num; }
     //all set methods
 
     public String getFirstName() { return firstName; }
@@ -43,7 +43,7 @@ public class LibMember {
     public long getCprNum() { return cprNum; }
     public String getTeleNum() { return teleNum; }
     public Book[] getBooksIssued() { return booksIssued; }
-    public int getNumBookIssued() { return numBookIssued; }
+    public int getNumBookIssued() { return numBooksIssued; }
     //all get methods
 
     public boolean equals(LibMember check){
@@ -51,14 +51,14 @@ public class LibMember {
             return false;
         }
         boolean same= false;
-        if(firstName.equals(check.firstName) && lastName.equals(check.lastName) && gender == check.gender && cprNum == check.cprNum && teleNum.equals(check.teleNum) && numBookIssued == check.numBookIssued){
+        if(firstName.equals(check.firstName) && lastName.equals(check.lastName) && gender == check.gender && cprNum == check.cprNum && teleNum.equals(check.teleNum) && numBooksIssued == check.numBookIssued){
             same = true;
         }
         return same;
     }
 
     public String toString(){
-        String converted= "Name: " + firstName + " " + lastName + "\ngender: " + gender + "\nCPR: " +cprNum + "\nTelephone: " +teleNum + "\nNumber of books issued: " + numBookIssued; 
+        String converted= "Name: " + firstName + " " + lastName + "\ngender: " + gender + "\nCPR: " +cprNum + "\nTelephone: " +teleNum + "\nNumber of books issued: " + numBooksIssued; 
         return converted;
     }
 }
