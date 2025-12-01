@@ -15,7 +15,7 @@ public class LibrarySystem {
         membersListSize = 0;
     }
 
-    //  addBook
+    // addBook
     public boolean addBook(Book book) {
         if (book == null) {
             return false;
@@ -34,7 +34,7 @@ public class LibrarySystem {
         return true;
     }
 
-    //  deleteBook
+    // deleteBook
     public boolean deleteBook(long accessionNum) {
         if (booksListSize == 0) {
             return false;
@@ -55,7 +55,7 @@ public class LibrarySystem {
         return false;
     }
 
-    //  addMember
+    // addMember
     public boolean addMember(LibMember member) {
         if (member == null) {
             return false;
@@ -74,7 +74,7 @@ public class LibrarySystem {
         return true;
     }
 
-    //  deleteMember
+    // deleteMember
     public boolean deleteMember(long cprNum) {
         if (membersListSize == 0) {
             return false;
@@ -85,7 +85,17 @@ public class LibrarySystem {
             LibMember m = it.next();
             if (m.getCprNum() == cprNum) {
 
-                if (m.getNumBooksIssued() > 0) {
+                Book[] issued = m.getBooksIssued();
+                boolean hasIssued = false;
+                if (issued != null) {
+                    for (Book b : issued) {
+                        if (b != null) {
+                            hasIssued = true;
+                            break;
+                        }
+                    }
+                }
+                if (hasIssued) {
                     return false;
                 }
 
@@ -105,7 +115,7 @@ public class LibrarySystem {
         return false;
     }
 
-    //  searchBook
+    // searchBook
     public int searchBook(long accessionNum) {
         int index = 0;
         ListIterator<Book> it = booksList.listIterator();
@@ -119,7 +129,7 @@ public class LibrarySystem {
         return -1;
     }
 
-    //  searchMember
+    // searchMember
     public int searchMember(long cprNum) {
         int index = 0;
         ListIterator<LibMember> it = membersList.listIterator();
@@ -133,107 +143,104 @@ public class LibrarySystem {
         return -1;
     }
 
-    //  isEmptyBooksList
+    // isEmptyBooksList
     public boolean isEmptyBooksList() {
         return booksListSize == 0;
     }
 
-    //  isEmptyMembersList
+    // isEmptyMembersList
     public boolean isEmptyMembersList() {
         return membersListSize == 0;
     }
 
-    //  sizeBooksList
-    public int sizeBooksList() {
-        return booksListSize;
-    }
-
-    //  sizeMembersList
-    public int sizeMembersList() {
-        return membersListSize;
-    }
-
-    //  issueBook
+    // issueBook
     public boolean issueBook(long accessionNum, long cprNum) {
         int bookIndex = searchBook(accessionNum);
-        if (bookIndex == -1) return false;
+        if (bookIndex == -1) {
+            return false;
+        }
 
         int memberIndex = searchMember(cprNum);
-        if (memberIndex == -1) return false;
+        if (memberIndex == -1) {
+            return false;
+        }
 
         Book book = booksList.get(bookIndex);
         LibMember member = membersList.get(memberIndex);
 
-        if (book.getIssuedTo() != null) return false;
+        // Check if book is already issued
+        if (book.getIssuedTo() != null) {
+            return false;
+        }
 
-        if (member.getNumBooksIssued() >= 10) return false;
+        // Check if member has reached maximum books limit
+        if (member.getNumBookIssued() >= 10) {
+            return false;
+        }
 
-        Book[] issued = member.getBooksIssued();
-        int num = member.getNumBooksIssued();
+        // Issue the book
+        if (member.addIssuedBook(book)) {
+            book.setIssuedTo(member);
+            return true;
+        }
 
-        issued[num] = book;
-        member.setNumBooksIssued(num + 1);
-        book.setIssuedTo(member);
-
-        return true;
+        return false;
     }
 
-    //  returnBook
+    // returnBook
     public boolean returnBook(long accessionNum) {
         int bookIndex = searchBook(accessionNum);
-        if (bookIndex == -1) return false;
+        if (bookIndex == -1) {
+            return false;
+        }
 
         Book book = booksList.get(bookIndex);
         LibMember member = book.getIssuedTo();
 
-        if (member == null) return false;
-
-        Book[] issued = member.getBooksIssued();
-        int num = member.getNumBooksIssued();
-        int pos = -1;
-
-        for (int i = 0; i < num; i++) {
-            if (issued[i].getAccessionNum() == accessionNum) {
-                pos = i;
-                break;
-            }
+        // Check if book is actually issued
+        if (member == null) {
+            return false;
         }
 
-        if (pos != -1) {
-            for (int i = pos; i < num - 1; i++) {
-                issued[i] = issued[i + 1];
-            }
-            issued[num - 1] = null;
-            member.setNumBooksIssued(num - 1);
+        // Return the book
+        if (member.removeIssuedBook(accessionNum)) {
+            book.setIssuedTo(null);
+            return true;
         }
 
-        book.setIssuedTo(null);
-        return true;
+        return false;
     }
 
-    //  printBooksIssued
+    // printBooksIssued
     public void printBooksIssued(long cprNum) {
         int memberIndex = searchMember(cprNum);
         if (memberIndex == -1) {
-            System.out.println("Member not found");
+            System.out.println("Error: Member not found!");
             return;
         }
 
         LibMember member = membersList.get(memberIndex);
         Book[] issued = member.getBooksIssued();
-        int num = member.getNumBooksIssued();
 
-        if (num == 0) {
-            System.out.println("No books issued to this member");
+        if (issued == null || member.getNumBookIssued() == 0) {
+            System.out.println("No books currently issued to this member.");
             return;
         }
 
-        for (int i = 0; i < num; i++) {
-            System.out.println(issued[i]);
+        System.out.println("\n--- Books Issued to " + member.getFirstName() + " " +
+                member.getLastName() + " ---");
+        int count = 0;
+        for (Book b : issued) {
+            if (b != null) {
+                count++;
+                System.out.println("\nBook #" + count + ":");
+                System.out.println(b);
+                System.out.println("---");
+            }
         }
     }
 
-    //  isBookIssued
+    // isBookIssued
     public boolean isBookIssued(long accessionNum) {
         int index = searchBook(accessionNum);
         if (index == -1) {
@@ -241,5 +248,15 @@ public class LibrarySystem {
         }
         Book book = booksList.get(index);
         return book.getIssuedTo() != null;
+    }
+
+    // sizeBooksList
+    public int sizeBooksList() {
+        return booksListSize;
+    }
+
+    // sizeMembersList
+    public int sizeMembersList() {
+        return membersListSize;
     }
 }
