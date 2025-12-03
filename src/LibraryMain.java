@@ -13,6 +13,7 @@ public class LibraryMain {
         System.out.println("╚════════════════════════════════════════╝");
 
         while (running) {
+            
             System.out.println("\n╔════════════ LIBRARY MENU ═════════════╗");
             System.out.println("║  1.  Add Book                          ║");
             System.out.println("║  2.  Delete Book                       ║");
@@ -30,7 +31,7 @@ public class LibraryMain {
             System.out.println("╚════════════════════════════════════════╝");
 
             System.out.print("Enter your choice: ");
-
+            
             // Input validation
             int choice;
             try {
@@ -93,7 +94,7 @@ public class LibraryMain {
 
     private static void addBook() {
         System.out.println("\n--- Add New Book ---");
-
+        
         try {
             System.out.print("Enter accession number: ");
             long ac = scanner.nextLong();
@@ -118,7 +119,7 @@ public class LibraryMain {
             scanner.nextLine();
             String isbn = scanner.nextLine();
 
-            Book b = new Book(t, a1, a2, p, y, isbn, ac);
+            Book b = new Book(t, a1, a2, p, y, isbn);
 
             if (library.addBook(b)) {
                 System.out.println("✅ Book added successfully!");
@@ -133,7 +134,7 @@ public class LibraryMain {
 
     private static void deleteBook() {
         System.out.println("\n--- Delete Book ---");
-
+        
         try {
             System.out.print("Enter accession number: ");
             long ac = scanner.nextLong();
@@ -151,7 +152,7 @@ public class LibraryMain {
 
     private static void addMember() {
         System.out.println("\n--- Add New Member ---");
-
+        
         try {
             System.out.print("Enter CPR: ");
             long cpr = scanner.nextLong();
@@ -184,7 +185,7 @@ public class LibraryMain {
 
     private static void deleteMember() {
         System.out.println("\n--- Delete Member ---");
-
+        
         try {
             System.out.print("Enter CPR: ");
             long cpr = scanner.nextLong();
@@ -202,7 +203,7 @@ public class LibraryMain {
 
     private static void issueBook() {
         System.out.println("\n--- Issue Book ---");
-
+        
         try {
             System.out.print("Enter accession number: ");
             long ac = scanner.nextLong();
@@ -213,8 +214,7 @@ public class LibraryMain {
             if (library.issueBook(ac, cpr)) {
                 System.out.println("✅ Book issued successfully!");
             } else {
-                System.out.println(
-                        "❌ Cannot issue book (book/member not found, book already issued, or member limit reached).");
+                System.out.println("❌ Cannot issue book (book/member not found, book already issued, or member limit reached).");
             }
         } catch (Exception e) {
             System.out.println("❌ Error: Invalid input format!");
@@ -224,7 +224,7 @@ public class LibraryMain {
 
     private static void returnBook() {
         System.out.println("\n--- Return Book ---");
-
+        
         try {
             System.out.print("Enter accession number: ");
             long ac = scanner.nextLong();
@@ -242,7 +242,7 @@ public class LibraryMain {
 
     private static void searchBook() {
         System.out.println("\n--- Search Book ---");
-
+        
         try {
             System.out.print("Enter accession number: ");
             long ac = scanner.nextLong();
@@ -262,7 +262,7 @@ public class LibraryMain {
 
     private static void searchMember() {
         System.out.println("\n--- Search Member ---");
-
+        
         try {
             System.out.print("Enter CPR: ");
             long cpr = scanner.nextLong();
@@ -282,7 +282,7 @@ public class LibraryMain {
 
     private static void printBooksIssued() {
         System.out.println("\n--- Books Issued to Member ---");
-
+        
         try {
             System.out.print("Enter member CPR: ");
             long cpr = scanner.nextLong();
@@ -296,7 +296,7 @@ public class LibraryMain {
 
     private static void checkIssued() {
         System.out.println("\n--- Check if Book is Issued ---");
-
+        
         try {
             System.out.print("Enter accession number: ");
             long ac = scanner.nextLong();

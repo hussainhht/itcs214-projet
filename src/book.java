@@ -8,25 +8,27 @@ public class Book {
     private long accessionNum;
     private LibMember issuedTo;
 
+    private static long nextAccessionNum = 1001;
+
     public Book() {
         title = "";
         author1 = "";
         author2 = "";
         publisher = "";
-        yearPublication = -1;
+        yearPublication = 0;
         isbn = "";
-        accessionNum = -1;
+        accessionNum = nextAccessionNum++;
         issuedTo = null;
     }
 
-    public Book(String t, String a1, String a2, String p, int y, String i, long ac) {
+    public Book(String t, String a1, String a2, String p, int y, String i) {
         title = t;
         author1 = a1;
         author2 = a2;
         publisher = p;
         yearPublication = y;
         isbn = i;
-        accessionNum = ac;
+        accessionNum = nextAccessionNum++;
         issuedTo = null;
     }
 
@@ -96,20 +98,18 @@ public class Book {
     }
     // all get methods
 
-    public boolean equals(Book b) {
-        if (b == null) {
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
             return false;
-        }
-        return title.equals(b.title) &&
-                author1.equals(b.author1) &&
-                author2.equals(b.author2) &&
-                publisher.equals(b.publisher) &&
-                yearPublication == b.yearPublication &&
-                isbn.equals(b.isbn) &&
-                accessionNum == b.accessionNum &&
-                issuedTo == b.issuedTo;
+
+        Book book = (Book) obj;
+        return accessionNum == book.accessionNum;
     }
 
+    @Override
     public String toString() {
         String issuedInfo = (issuedTo != null) ? (issuedTo.getFirstName() + " " + issuedTo.getLastName()) : "Available";
 

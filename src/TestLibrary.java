@@ -10,8 +10,8 @@ public class TestLibrary {
         // Test 1: Add books
         System.out.println("Test 1: Adding books...");
         Book book1 = new Book("Java Programming", "James Gosling", "Bill Joy", "Oracle Press", 2020,
-                "978-0-1234-5678-9", 1001);
-        Book book2 = new Book("Data Structures", "Mark Weiss", "", "Addison Wesley", 2019, "978-0-9876-5432-1", 1002);
+                "978-0-1234-5678-9");
+        Book book2 = new Book("Data Structures", "Mark Weiss", "", "Addison Wesley", 2019, "978-0-9876-5432-1");
 
         boolean added1 = library.addBook(book1);
         boolean added2 = library.addBook(book2);
@@ -22,7 +22,7 @@ public class TestLibrary {
 
         // Test 2: Add duplicate book (should fail)
         System.out.println("\nTest 2: Adding duplicate book...");
-        Book bookDup = new Book("Duplicate", "Author", "", "Publisher", 2021, "123", 1001);
+        Book bookDup = new Book("Duplicate", "Author", "", "Publisher", 2021, "123");
         boolean addedDup = library.addBook(bookDup);
         System.out.println("Duplicate book rejected: " + (!addedDup ? "✅" : "❌"));
 
