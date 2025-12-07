@@ -8,6 +8,7 @@ public class LibrarySystem {
     private int booksListSize;
     private int membersListSize;
 
+    // Constructor
     public LibrarySystem() {
         booksList = new LinkedList<Book>();
         membersList = new LinkedList<LibMember>();
@@ -20,7 +21,8 @@ public class LibrarySystem {
         if (book == null) {
             return false;
         }
-
+         
+        // Check if book with same accession number already exists
         ListIterator<Book> it = booksList.listIterator();
         while (it.hasNext()) {
             Book b = it.next();
@@ -29,6 +31,7 @@ public class LibrarySystem {
             }
         }
 
+        // Add the book to the list
         booksList.addLast(book);
         booksListSize++;
         return true;
@@ -40,9 +43,12 @@ public class LibrarySystem {
             return false;
         }
 
+        // Remove the book from the list
         ListIterator<Book> it = booksList.listIterator();
         while (it.hasNext()) {
             Book b = it.next();
+
+            // Check if the book is issued
             if (b.getAccessionNum() == accessionNum) {
                 if (b.getIssuedTo() != null) {
                     return false;
@@ -61,6 +67,7 @@ public class LibrarySystem {
             return false;
         }
 
+        // Check if member with same CPR number already exists
         ListIterator<LibMember> it = membersList.listIterator();
         while (it.hasNext()) {
             LibMember m = it.next();
@@ -80,11 +87,13 @@ public class LibrarySystem {
             return false;
         }
 
+        // Remove the member from the list
         ListIterator<LibMember> it = membersList.listIterator();
         while (it.hasNext()) {
             LibMember m = it.next();
             if (m.getCprNum() == cprNum) {
 
+                // Check if member has any issued books
                 Book[] issued = m.getBooksIssued();
                 boolean hasIssued = false;
                 if (issued != null) {
@@ -99,9 +108,11 @@ public class LibrarySystem {
                     return false;
                 }
 
+                // Check if any book is issued to the member
                 ListIterator<Book> bit = booksList.listIterator();
                 while (bit.hasNext()) {
                     Book b = bit.next();
+                    // If a book is issued to the member, cannot delete
                     if (b.getIssuedTo() == m) {
                         return false;
                     }
@@ -118,6 +129,8 @@ public class LibrarySystem {
     // searchBook
     public int searchBook(long accessionNum) {
         int index = 0;
+
+        // Iterate through the books list to find the book
         ListIterator<Book> it = booksList.listIterator();
         while (it.hasNext()) {
             Book b = it.next();
@@ -132,6 +145,8 @@ public class LibrarySystem {
     // searchMember
     public int searchMember(long cprNum) {
         int index = 0;
+
+        // Iterate through the members list to find the member
         ListIterator<LibMember> it = membersList.listIterator();
         while (it.hasNext()) {
             LibMember m = it.next();
@@ -155,16 +170,20 @@ public class LibrarySystem {
 
     // issueBook
     public boolean issueBook(long accessionNum, long cprNum) {
+
+        // Find the book and member indices
         int bookIndex = searchBook(accessionNum);
         if (bookIndex == -1) {
             return false;
         }
 
+        // Find the member index
         int memberIndex = searchMember(cprNum);
         if (memberIndex == -1) {
             return false;
         }
 
+        // Get the book and member objects
         Book book = booksList.get(bookIndex);
         LibMember member = membersList.get(memberIndex);
 
@@ -219,6 +238,7 @@ public class LibrarySystem {
             return;
         }
 
+        // Get the member object
         LibMember member = membersList.get(memberIndex);
         Book[] issued = member.getBooksIssued();
 
